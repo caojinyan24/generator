@@ -1,0 +1,6 @@
+
+/.idea/*
+/auto_generator/
+/logs/
+/*.iml
+/target/
