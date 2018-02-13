@@ -1,6 +1,4 @@
-package ${servicePackage};
 
-import ${domainPackage}.${className};
 
 /**
  * ${className}Service

@@ -11,7 +11,7 @@
             <level>DEBUG</level>
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>engin.%d{yyyy-MM-dd}.log</FileNamePattern>
+            <FileNamePattern>logs/engin.%d{yyyy-MM-dd}.log</FileNamePattern>
         </rollingPolicy>
     </appender>
     
@@ -26,7 +26,7 @@
 			<level>ERROR</level>
 		</filter>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<FileNamePattern>engin_error.%d{yyyy-MM-dd}.log</FileNamePattern>
+			<FileNamePattern>logs/engin_error.%d{yyyy-MM-dd}.log</FileNamePattern>
 		</rollingPolicy>
 	</appender>
 

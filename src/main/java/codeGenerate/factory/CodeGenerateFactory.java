@@ -192,7 +192,7 @@ public class CodeGenerateFactory {
             //java,xml文件名称
             String sqlMapperPath = sqlmapPackage.replace(".", "/") + "/" + className + ".xml";
             String domainPath = domainPackage.replace(".", "/") + "/" + className + ".java";
-            String mapperPath = mapperPackage.replace(".", "/") + "/" + className + "mapper.java";
+            String mapperPath = mapperPackage.replace(".", "/") + "/" + className + "Mapper.java";
             String servicePath = servicePackage.replace(".", "/") + "/" + className + "Service.java";
             String serviceImplPath = serviceImplPackage.replace(".", "/") + "/" + className + "ServiceImpl.java";
             String controllerPath = controllerPackage.replace(".", "/") + "/" + className + "Controller.java";

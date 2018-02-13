@@ -1,8 +1,8 @@
-package ${controllerPackage};
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -11,14 +11,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import javax.annotation.Resource;
 
-import com.qunar.pay.g2.fpp.common.utils.AjaxJson;
-import com.qunar.pay.g2.fpp.common.utils.PageQuery;
-import com.qunar.pay.g2.fpp.common.utils.SystemTools;
-import ${domainPackage}.${className};
-import ${servicePackage}.${className}Service;
-import com.qunar.pay.g2.utils.common.log.Logger;
-import com.qunar.pay.g2.utils.common.log.LoggerFactory;
+
 
  /**
  * ${className}Controller  ${codeName}
@@ -29,7 +24,7 @@ import com.qunar.pay.g2.utils.common.log.LoggerFactory;
 public class ${className}Controller extends BaseController{
 
 	private static final Logger logger = LoggerFactory.getLogger(${className}Controller.class);
-  @Autowired
+  @Resource
   private ${className}Service ${lowerName}Service;
   
  /**

@@ -18,7 +18,7 @@ public class QueryTable {
 	private static String passWord = CodeResourceUtil.PASSWORD;
 	
 	public static void main(String[] args) throws Exception {
-		final File file = new File("tables.txt");
+		final File file = new File("out/tables.txt");
 		if(!file.exists()) {
 			file.createNewFile();
 		}else{

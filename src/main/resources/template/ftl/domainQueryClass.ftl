@@ -1,4 +1,3 @@
-package ${domainQueryPackage};
 
 import java.util.Date;
 import java.math.BigDecimal;

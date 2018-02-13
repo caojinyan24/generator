@@ -251,7 +251,7 @@ public class CreateBean {
         argv = str.toString();
         method = getset.toString();
         toString.append("    sb.append('}');\n" +
-                "\t\treturn sb.toString();");
+                "\t\treturn sb.toString();\n}");
         return argv + method + toString.toString();
     }
 
