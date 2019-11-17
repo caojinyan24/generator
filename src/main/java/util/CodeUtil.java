@@ -13,8 +13,8 @@ public class CodeUtil {
 
 	public static void main(String[] args) {
 		 /** 此处修改成你的 表名 和 中文注释***/
-		 String tableName="schedule_history";
-		 String codeName ="逾期等级表";
+		 String tableName="abc";
+		 String codeName ="abc";
 		 CodeGenerateFactory.codeGenerateByFTL(tableName, codeName, FtlDef.KEY_TYPE_02);
 	}
 }
