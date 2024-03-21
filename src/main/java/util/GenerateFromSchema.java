@@ -5,6 +5,9 @@ import codeGenerate.TableInfo;
 import codeGenerate.def.CodeResourceUtil;
 import codeGenerate.task.CodeGenerateTask;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,31 +17,37 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-/**
- * 描述：根据数据库所有的表的生成代码
- *
- * @author：zhoujf
- * @version:1.0
- * @since
- */
-public class JDCodeTool {
+public class GenerateFromSchema {
     private static String url = CodeResourceUtil.URL;
     private static String username = CodeResourceUtil.USERNAME;
     private static String passWord = CodeResourceUtil.PASSWORD;
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, IOException {
         CreateBean createBean = new CreateBean();
+        System.out.println("url=" + url);
+        System.out.println("username=" + username);
         createBean.setMysqlInfo(url, username, passWord);
+        System.out.println(new File("").getAbsolutePath());
+        File[] files = new File(new File("").getAbsolutePath() + "/src/main/resources/dbstructure").listFiles();
+        for (File item : files) {
+            try {
+                StringBuilder sb = new StringBuilder();
+                BufferedReader in = new BufferedReader(new java.io.FileReader(item.getAbsolutePath()));
+                while (in.ready()) {
+                    sb.append(in.readLine());
+                }
+                createBean.getConnection().prepareCall(sb.toString()).execute();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+
+
         List<TableInfo> tables = createBean.getTablesInfo();
         for (TableInfo info : tables) {
-            if (info.getTableName().equals("ccs_acct")){
-                List<TableInfo>in=new ArrayList<TableInfo>();
-                in.add(info);
-                batchGenerateCode(in);
-            }
             System.out.println(info.getTableName() + ";" + info.getTableComment());
         }
-//        batchGenerateCode(tables);
+        batchGenerateCode(tables);
     }
 
 
@@ -51,11 +60,11 @@ public class JDCodeTool {
             for (TableInfo tableInfo : tables) {
                 futures.add(executor.submit(new CodeGenerateTask(tableInfo)));
             }
-            // 提交所有的任务后,关闭executor                                              
+            // 提交所有的任务后,关闭executor
             System.out.println("Starting shutdown...");
             executor.shutdown();
 
-            // 每秒钟打印执行进度                                                         
+            // 每秒钟打印执行进度
             while (!executor.isTerminated()) {
                 executor.awaitTermination(1, TimeUnit.SECONDS);
                 int progress = Math.round((executor.getCompletedTaskCount() * 100) / executor.getTaskCount());

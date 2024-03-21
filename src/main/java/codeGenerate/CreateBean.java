@@ -52,6 +52,8 @@ public class CreateBean {
     }
 
     public List<String> getTables() throws SQLException {
+
+
         Connection con = this.getConnection();
         PreparedStatement ps = con.prepareStatement(SQLTables);
         ResultSet rs = ps.executeQuery();

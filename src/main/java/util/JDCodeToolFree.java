@@ -15,7 +15,7 @@ public class JDCodeToolFree {
 
 	public static void main(String[] args) {
 		 /** 此处修改成你的 表名 和 中文注释***/
-		 String codeCgTables = CodeResourceUtil.getConfigInfo("wu_transaction_info");
+		 String codeCgTables = CodeResourceUtil.getConfigInfo("ccs_acct_o");
 		 if(StringUtils.isEmpty(codeCgTables)){
 			 return;
 		 }
