@@ -1,1 +1,6 @@
-“# swa19.github.io” git init git add README.md git commit -m “first commit” git remote add origin git@github.com:swa19/swa19.github.io.git git push -u origin master
+1. config.properties 配置生成相关的信息，包括生成哪些文件，生成代码中的包信息等
+2. 在database.xml配置数据库信息，生成代码过程需要直连数据库并读取数据库中的表信息
+3. template.ftl是生成代码的模板，可以自定义修改
+（当前初始版本针对sqlmap.ftl和mapperClass.ftl做了定制化修改，确保生成的代码一定能使用到索引。生成代码完毕后，需要手工修改"XXX"以编译通过）
+
+4. util包下是几种生成模式，查看代码注释使用

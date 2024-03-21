@@ -17,6 +17,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 根据建表语句的文件，生成代码
+ */
 public class GenerateFromSchema {
     private static String url = CodeResourceUtil.URL;
     private static String username = CodeResourceUtil.USERNAME;

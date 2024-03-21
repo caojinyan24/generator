@@ -31,11 +31,9 @@ public class JDCodeTool {
         createBean.setMysqlInfo(url, username, passWord);
         List<TableInfo> tables = createBean.getTablesInfo();
         for (TableInfo info : tables) {
-            if (info.getTableName().equals("ccs_acct")){
                 List<TableInfo>in=new ArrayList<TableInfo>();
                 in.add(info);
                 batchGenerateCode(in);
-            }
             System.out.println(info.getTableName() + ";" + info.getTableComment());
         }
 //        batchGenerateCode(tables);
