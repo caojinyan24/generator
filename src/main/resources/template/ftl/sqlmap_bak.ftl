@@ -3,17 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
 <mapper namespace="${mapperPackage}.${className}Mapper">
-<sql id="wherecontation">
-        <trim suffixOverrides=",">
-        <#list columnDatas as item>
-            <#if item.columnKey != 'PRI'>
-                <if test="query.${item.domainPropertyName} != null and query.${item.domainPropertyName} != ''">
-                    AND ${tablesAsName}.${item.columnName} =  ${"#"}{query.${item.domainPropertyName}}
-                </if>
-            </#if>
-        </#list>
-        </trim>
-    </sql>
+
     <update id="updateByUniqKey" parameterType="${domainPackage}.${className}">
         UPDATE   ${tableName}
         <trim prefix="SET" suffixOverrides=",">
