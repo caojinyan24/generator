@@ -213,6 +213,12 @@ public class CodeGenerateFactory {
             String controllerFlag = CodeResourceUtil.getConfigInfo("controller_flag");
             String domainQueryFlag = CodeResourceUtil.getConfigInfo("domain_query_flag");
 
+            String checkFlag = CodeResourceUtil.getConfigInfo("check_flag");
+            String repairFlag = CodeResourceUtil.getConfigInfo("repair_flag");
+            String smapperFlag = CodeResourceUtil.getConfigInfo("smapper_flag");
+            String ssqlFlag = CodeResourceUtil.getConfigInfo("ssql_flag");
+
+
             Map<String, Object> sqlMap = createBean.getAutoCreateSql(tableName);
             List<ColumnData> columnDatas = createBean.getColumnDatas(tableName);
             List<ColumnData> columnKeyDatas = createBean.getColumnKeyDatas(columnDatas);
@@ -277,8 +283,17 @@ public class CodeGenerateFactory {
                 FreemarkerEngine.createFileByFTL(cfg, root, "pageDetail.ftl", pathSrc, pageDetailPath);
                 FreemarkerEngine.createFileByFTL(cfg, root, "pageEdit.ftl", pathSrc, pageEditPath);
             }
-            if ("Y".equals(domainQueryFlag)) {
-                FreemarkerEngine.createFileByFTL(cfg, root, "domainQueryClass.ftl", pathSrc, domainQueryPath);
+            if ("Y".equals(checkFlag)) {
+                FreemarkerEngine.createFileByFTL(cfg, root, "checkserviceClass.ftl", pathSrc,  "/checker/" + className + "Checker.java");
+            }
+            if ("Y".equals(repairFlag)) {
+                FreemarkerEngine.createFileByFTL(cfg, root, "repairserviceClass.ftl", pathSrc,  "/repair/" + className + "Repair.java");
+            }
+            if ("Y".equals(smapperFlag)) {
+                FreemarkerEngine.createFileByFTL(cfg, root, "SmapperClass.ftl", pathSrc, "/smapper"+ "/S" + className + "Mapper.java");
+            }
+            if ("Y".equals(ssqlFlag)) {
+                FreemarkerEngine.createFileByFTL(cfg, root, "sqlmap_sharding.ftl", pathSrc, "/mapper" + "/S" + className + "Mapper.xml");
             }
             log.info("----------------------------代码生成完毕---------------------------");
         } catch (Exception e1) {
