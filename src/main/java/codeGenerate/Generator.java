@@ -14,7 +14,7 @@ public class Generator {
     public static void batchGenerateCode(List<TableInfo> tables) {
         try {
             @SuppressWarnings({"unchecked", "rawtypes"})
-            ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 1, TimeUnit.SECONDS, new LinkedBlockingQueue());
+            ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 20, 1, TimeUnit.SECONDS, new LinkedBlockingQueue());
             List<Future<Boolean>> futures = new ArrayList<Future<Boolean>>(9000);
             long start = new Date().getTime();
             for (TableInfo tableInfo : tables) {

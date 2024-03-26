@@ -2,7 +2,7 @@ package ${domainPackage}.service.datarepair;
 
 import com.google.common.collect.Maps;
 import ${domainPackage}.dao.ccscore.${className}Mapper;
-import ${domainPackage}.dao.authsharding.S${className}Mapper;
+import ${domainPackage}.dao.coresharding.S${className}Mapper;
 import ${domainPackage}.dao.entity.core.${className};
 import ${domainPackage}.util.GlobalParam;
 import org.slf4j.Logger;

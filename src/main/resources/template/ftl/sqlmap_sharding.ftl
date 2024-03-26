@@ -41,7 +41,7 @@
         )
     </insert>
 
-<select id="selectByCustId" parameterType="java.lang.String" resultType="${domainPackage}.${className}">
+<select id="selectByCustId" parameterType="java.lang.String" resultType="{domainPackage}.dao.entity.core.${className}">
         SELECT
     <#list columnDatas as item>
         <#if item_index==0>
@@ -63,6 +63,6 @@
         </#list>
         </trim>
         WHERE
-        id = ${"#"+"{id}"}
+         = ${"#"+"{uniqValue}"}
     </update>
 </mapper>

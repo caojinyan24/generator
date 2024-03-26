@@ -9,8 +9,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.Date;
+import java.util.*;
 
 
 /**
@@ -149,13 +149,44 @@ public class CreateBean {
             columnList.add(cd);
             i++;
         }
-        System.out.println("table =" + tableName + ",columns Num is " + i);
         argv = str.toString();
         method = getset.toString();
         rs.close();
         ps.close();
         con.close();
         return columnList;
+    }
+
+    /**
+     * 查询表的字段，封装成List
+     *
+     * @param tableName
+     * @return
+     * @throws SQLException
+     */
+    public List<IndexData> getIndexDatas(String tableName) throws SQLException {
+        List<IndexData> result = new ArrayList<IndexData>();
+        String SQLColumns = String.format("SELECT  INDEX_NAME , SEQ_IN_INDEX,COLUMN_NAME,NON_UNIQUE FROM information_schema.STATISTICS where TABLE_NAME='%s' and TABLE_SCHEMA='%s'", tableName, CodeResourceUtil.getDATABASE_NAME());
+        Connection con = this.getConnection();
+        PreparedStatement ps = con.prepareStatement(SQLColumns);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            String indexName = rs.getString(1);
+            Integer indexSeq = rs.getInt(2);
+            String column = rs.getString(3);
+            Integer nonUniq = rs.getInt(4);
+            if (indexSeq == 1 || result.size() == 0) {
+                List<String> columns = new ArrayList<String>();
+                columns.add(column);
+                result.add(new IndexData(columns, nonUniq, indexName));
+            } else {
+                result.get(result.size() - 1).getIndexFields().add(column);
+            }
+        }
+        rs.close();
+        ps.close();
+        con.close();
+        return result;
     }
 
     public List<ColumnData> getColumnKeyDatas(List<ColumnData> columnList) {
@@ -232,7 +263,10 @@ public class CreateBean {
                 "    public String toString() {\n" +
                 "        final StringBuilder sb = new StringBuilder(\"");
         toString.append(className).append("{\"").append(");\r\t");
-        for (ColumnData d : dataList) {
+        String equalMethodReturnFields = "";
+        String hashCodeFields = "";
+        for (int i = 0; i < dataList.size(); i++) {
+            ColumnData d = dataList.get(i);
             String name = d.getDomainPropertyName();
             String type = d.getDataType();
             String comment = d.getColumnComment();
@@ -241,6 +275,20 @@ public class CreateBean {
             str.append("\r\t").append(" *").append(comment);
             str.append("\r\t").append(" */");
             str.append("\r\t").append("private ").append(type + " ").append(name).append(";");
+            if (!(name.equals("pid") || name.equals("createTime") || name.equals("updateTime") || name.equals("jpaVersion"))) {
+                if (equalMethodReturnFields.length() == 0) {
+                    equalMethodReturnFields = equalMethodReturnFields.concat(String.format("Objects.equals(%s, that.%s)", name, name));
+                } else {
+                    equalMethodReturnFields = equalMethodReturnFields.concat(String.format(" && Objects.equals(%s, that.%s)", name, name));
+                }
+                if (hashCodeFields.length() == 0) {
+                    hashCodeFields = hashCodeFields.concat(name);
+                } else {
+                    hashCodeFields = hashCodeFields.concat(String.format(",%s", name));
+
+                }
+            }
+
             String method = maxChar + name.substring(1, name.length());
             getset.append("\r\t").append("public ").append(type + " ").append("get" + method + "() {\r\t");
             getset.append("    return this.").append(name).append(";\r\t}");
@@ -254,10 +302,47 @@ public class CreateBean {
         method = getset.toString();
         toString.append("    sb.append('}');\n" +
                 "\t\treturn sb.toString();\n}");
-        return argv + method + toString.toString();
+        //生成equal和hashcode方法
+
+
+        //生成自定义方法
+        String getUniqKeyValue = String.format("   public String getUniqKeyValue() {\n" +
+                "        return %s;\n" +
+                "    }\n", getUniq(tableName));
+
+        String equalFormat = String.format("    @Override\n" +
+                "    public boolean equals(Object o) {\n" +
+                "        if (this == o) return true;\n" +
+                "        if (!(o instanceof %s)) return false;\n" +
+                "        %s that = (%s) o;\n" +
+                "return %s ;" +
+                "}\n", className, className, className, equalMethodReturnFields);
+        String hashCode = String.format("    @Override\n" +
+                "    public int hashCode() {\n" +
+                "        return Objects.hash(%s);}", hashCodeFields);
+        return getUniqKeyValue + argv + method + toString + equalFormat + hashCode;
     }
 
-
+    public String getUniq(String tableName) throws SQLException {
+        String result = "";
+        List<IndexData> indexDataList = getIndexDatas(tableName);
+        for (IndexData item : indexDataList) {
+            if (item.getIndexType() == 0 && !"PRIMARY".equals(item.keyName)) {
+                for (String columnName : item.getIndexFields()) {
+                    result += "+" + getcolumnNameToDomainPropertyName(columnName);
+                }
+                break;
+            }
+        }
+        if (result.startsWith("+")) {
+            result = result.substring(1);
+        }
+        if (result.length() == 0) {
+            System.out.println("Err:noUniqKey");
+            return "\"Err:noUniqKey\"";
+        }
+        return result;
+    }
 
     /**
      * 获取字段对应的数据类型
@@ -594,5 +679,42 @@ public class CreateBean {
         }
         return commonColumns.delete(commonColumns.length() - 1, commonColumns.length()).toString();
     }
+
+    public String generateByUniqKeyForShardingDB(String tableName) throws SQLException {
+        String className = getTablesNameToClassName(tableName);
+        String lowerName = className.substring(0, 1).toLowerCase() + className.substring(1);
+        String result = "";
+        List<IndexData> indexDataList = getIndexDatas(tableName);
+        for (IndexData indexData : indexDataList) {
+            if (indexData.getIndexType() == 0 && !"PRIMARY".equals(indexData.keyName)) {
+                String columnJoin = "";
+                for (String column : indexData.getIndexFields()) {
+                    columnJoin += String.format("@Param(\"%s\") String %s,", getcolumnNameToDomainPropertyName(column), getcolumnNameToDomainPropertyName(column));
+                }
+                String format = String.format("     void updateByUniqKey(%s @Param(\"data\") %s %s, @Param(\"suffix\") String suffix);\n", columnJoin, className, lowerName);
+                String selectFormat = String.format("%s selectWithUniqKey(%s @Param(\"query\")%s %s, @Param(\"suffix\") String suffix);\n", className, columnJoin, className, lowerName);
+                result = result + format + selectFormat;
+                break;
+            }
+        }
+        return result;
+    }
+
+    public String getParameterUniq(String tableName) throws SQLException {
+        String result = "";
+        List<IndexData> indexDataList = getIndexDatas(tableName);
+        for (IndexData indexData : indexDataList) {
+            if (indexData.getIndexType() == 0 && !"PRIMARY".equals(indexData.keyName)) {
+                for (String column : indexData.getIndexFields()) {
+                    String propertyName = getcolumnNameToDomainPropertyName(column);
+                    result += String.format("item.get%s(), ", propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1));
+                }
+                System.out.println(tableName+"uniqKey:"+result);
+                break;
+            }
+        }
+        return result;
+    }
+
 
 }

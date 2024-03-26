@@ -1,6 +1,6 @@
-package com.xiaoju.global.fintech.creditcard.dao.authsharding;
+package ${domainPackage}.dao.authsharding;
 
-import com.xiaoju.global.fintech.creditcard.dao.entity.core.${className};
+import ${domainPackage}.dao.entity.core.${className};
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,7 +17,8 @@ public interface S${className}Mapper {
 
     void insertSelective(@Param("data") ${className} ${lowerName}, @Param("suffix") String suffix);
 
-    void updateByUniqKey(@Param("acctNbr") String acctNbr, @Param("acctType") String acctType, @Param("data") ${className} ${lowerName}, @Param("suffix") String suffix);
+    //void updateByUniqKey(@Param("uniqValue") String uniqValue, @Param("data") ${className} ${lowerName}, @Param("suffix") String suffix);
+${generateByUniqKeyForShardingDB}
 
     List<${className}> selectByCustId(@Param("custId") String custId, @Param("suffix") String suffix);
 
