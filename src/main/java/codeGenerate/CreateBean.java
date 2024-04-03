@@ -680,26 +680,56 @@ public class CreateBean {
         return commonColumns.delete(commonColumns.length() - 1, commonColumns.length()).toString();
     }
 
-    public String generateByUniqKeyForShardingDB(String tableName) throws SQLException {
+    public Map<String, String> generateByUniqKeyForShardingDB(String tableName) throws SQLException {
+        Map<String, String> resultMap = new HashMap<String, String>();
         String className = getTablesNameToClassName(tableName);
         String lowerName = className.substring(0, 1).toLowerCase() + className.substring(1);
-        String result = "";
         List<IndexData> indexDataList = getIndexDatas(tableName);
+        String mapper = "";
+        String sql = "";
         for (IndexData indexData : indexDataList) {
             if (indexData.getIndexType() == 0 && !"PRIMARY".equals(indexData.keyName)) {
                 String columnJoin = "";
                 for (String column : indexData.getIndexFields()) {
                     columnJoin += String.format("@Param(\"%s\") String %s,", getcolumnNameToDomainPropertyName(column), getcolumnNameToDomainPropertyName(column));
+                    sql += String.format(" %s =#{%s} and", column, getcolumnNameToDomainPropertyName(column));
                 }
+                sql = sql.substring(0, sql.length() - 3);//去掉最后的and
                 String format = String.format("     void updateByUniqKey(%s @Param(\"data\") %s %s, @Param(\"suffix\") String suffix);\n", columnJoin, className, lowerName);
                 String selectFormat = String.format("%s selectWithUniqKey(%s @Param(\"query\")%s %s, @Param(\"suffix\") String suffix);\n", className, columnJoin, className, lowerName);
-                result = result + format + selectFormat;
+                mapper = mapper + format + selectFormat;
                 break;
             }
         }
-        return result;
+        resultMap.put("generateByUniqKeyForShardingDB", mapper);
+        resultMap.put("uniqCondition", sql);
+        return resultMap;
     }
-
+    public Map<String, String> generateByUniqKey(String tableName) throws SQLException {
+        Map<String, String> resultMap = new HashMap<String, String>();
+        String className = getTablesNameToClassName(tableName);
+        String lowerName = className.substring(0, 1).toLowerCase() + className.substring(1);
+        List<IndexData> indexDataList = getIndexDatas(tableName);
+        String mapper = "";
+        String sql = "";
+        for (IndexData indexData : indexDataList) {
+            if (indexData.getIndexType() == 0 && !"PRIMARY".equals(indexData.keyName)) {
+                String columnJoin = "";
+                for (String column : indexData.getIndexFields()) {
+                    columnJoin += String.format("@Param(\"%s\") String %s,", getcolumnNameToDomainPropertyName(column), getcolumnNameToDomainPropertyName(column));
+                    sql += String.format(" %s =#{%s} and", column, getcolumnNameToDomainPropertyName(column));
+                }
+                sql = sql.substring(0, sql.length() - 3);//去掉最后的and
+                String format = String.format("     void updateByUniqKey(%s @Param(\"data\") %s %s);\n", columnJoin, className, lowerName);
+                String selectFormat = String.format("%s selectWithUniqKey(%s @Param(\"query\")%s %s);\n", className, columnJoin, className, lowerName);
+                mapper = mapper + format + selectFormat;
+                break;
+            }
+        }
+        resultMap.put("generateByUniqKey", mapper);
+        resultMap.put("uniqCondition", sql);
+        return resultMap;
+    }
     public String getParameterUniq(String tableName) throws SQLException {
         String result = "";
         List<IndexData> indexDataList = getIndexDatas(tableName);
@@ -709,7 +739,7 @@ public class CreateBean {
                     String propertyName = getcolumnNameToDomainPropertyName(column);
                     result += String.format("item.get%s(), ", propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1));
                 }
-                System.out.println(tableName+"uniqKey:"+result);
+                System.out.println(tableName + "uniqKey:" + result);
                 break;
             }
         }

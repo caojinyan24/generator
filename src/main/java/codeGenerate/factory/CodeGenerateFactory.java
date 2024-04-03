@@ -146,11 +146,9 @@ public class CodeGenerateFactory {
             root.put("columnKeyUseParam", columnKeyUseParam); //生成使用的主键参数
 //            root.put("SQL", sqlMap);
 
-/*******************************解析index**********************************/
-//            String generateByUniqKeyForShardingDB = createBean.generateByUniqKeyForShardingDB(tableName);
-//            root.put("generateByUniqKeyForShardingDB", generateByUniqKeyForShardingDB);
-String uniqItemParam=createBean.getParameterUniq(tableName);
-            root.put("uniqItemParam", uniqItemParam);
+            /*******************************解析index**********************************/
+
+
 
             /*******************************解析index**********************************/
 
@@ -158,13 +156,14 @@ String uniqItemParam=createBean.getParameterUniq(tableName);
             String templateBasePath = CodeGenerateFactory.getProjectPath() + CodeResourceUtil.getConfigInfo("templatepath_ftl");
             cfg.setDirectoryForTemplateLoading(new File(templateBasePath));
             cfg.setObjectWrapper(new DefaultObjectWrapper());
-            if ("Y".equals(sqlMapperFlag)) {
-                FreemarkerEngine.createFileByFTL(cfg, root, "sqlmap_core.ftl", pathSrc, sqlMapperPath);
-            }
+
             if ("Y".equals(domainFlag)) {
                 FreemarkerEngine.createFileByFTL(cfg, root, "domainClass.ftl", pathSrc, domainPath);
             }
             if ("Y".equals(mapperFlag)) {
+                Map<String,String>uniqProperties = createBean.generateByUniqKey(tableName);
+                root.put("generateByUniqKey", uniqProperties.get("generateByUniqKey"));
+                root.put("uniqCondition", uniqProperties.get("uniqCondition"));
                 FreemarkerEngine.createFileByFTL(cfg, root, "mapperclass_core.ftl", pathSrc, mapperPath);
             }
             if ("Y".equals(serviceFlag)) {
@@ -180,24 +179,51 @@ String uniqItemParam=createBean.getParameterUniq(tableName);
                 FreemarkerEngine.createFileByFTL(cfg, root, "pageDetail.ftl", pathSrc, pageDetailPath);
                 FreemarkerEngine.createFileByFTL(cfg, root, "pageEdit.ftl", pathSrc, pageEditPath);
             }
-            if ("Y".equals(checkFlag)) {
-                FreemarkerEngine.createFileByFTL(cfg, root, "checkserviceClass-core.ftl", pathSrc, "/checker/core/" + className + "Checker.java");
+            if ("Y".equals(CodeResourceUtil.getConfigInfo("check_core_flag"))) {
+                FreemarkerEngine.createFileByFTL(cfg, root, "check_core_flag.ftl", pathSrc, "/check_core_flag/" + className + "Checker.java");
             }
-            if ("Y".equals(repairFlag)) {
-                FreemarkerEngine.createFileByFTL(cfg, root, "repairserviceClass-core.ftl", pathSrc, "/repair/core/" + className + "Repair.java");
+            if ("Y".equals(CodeResourceUtil.getConfigInfo("repair_core_flag"))) {
+                String uniqItemParam = createBean.getParameterUniq(tableName);
+                root.put("uniqItemParam", uniqItemParam);
+                FreemarkerEngine.createFileByFTL(cfg, root, "repair_core_flag.ftl", pathSrc, "/repair_core_flag/" + className + "Repair.java");
             }
-            if ("Y".equals(smapperFlag)) {
-                FreemarkerEngine.createFileByFTL(cfg, root, "mapperClass-Sharding.ftl", pathSrc, "/smapper" + "/S" + className + "Mapper.java");
+            if ("Y".equals(CodeResourceUtil.getConfigInfo("check_auth_flag"))) {
+                FreemarkerEngine.createFileByFTL(cfg, root, "check_auth_flag.ftl", pathSrc, "/check_auth_flag/" + className + "Checker.java");
             }
-            if ("Y".equals(ssqlFlag)) {
-                FreemarkerEngine.createFileByFTL(cfg, root, "sqlmap_sharding.ftl", pathSrc, "/smapperxml" + "/S" + className + "Mapper.xml");
+            if ("Y".equals(CodeResourceUtil.getConfigInfo("repair_auth_flag"))) {
+                String uniqItemParam = createBean.getParameterUniq(tableName);
+                root.put("uniqItemParam", uniqItemParam);
+                FreemarkerEngine.createFileByFTL(cfg, root, "repair_auth_flag.ftl", pathSrc, "/repair_auth_flag/" + className + "Repair.java");
             }
-            if("Y".equals(CodeResourceUtil.getConfigInfo("sqlmap_core"))){
-                FreemarkerEngine.createFileByFTL(cfg, root, "sqlmap_core.ftl", pathSrc, "/sqlmap_core/" +   className + "Mapper.xml");
+            if ("Y".equals(CodeResourceUtil.getConfigInfo("mapperClass_auth_sharding"))) {
+                Map<String,String>uniqProperties = createBean.generateByUniqKeyForShardingDB(tableName);
+                root.put("generateByUniqKeyForShardingDB", uniqProperties.get("generateByUniqKeyForShardingDB"));
+                root.put("uniqCondition", uniqProperties.get("uniqCondition"));
+
+                FreemarkerEngine.createFileByFTL(cfg, root, "mapperClass_auth_sharding.ftl", pathSrc, "/mapperClass_auth_sharding" + "/S" + className + "Mapper.java");
             }
-            if("Y".equals(CodeResourceUtil.getConfigInfo("mapperclass_core"))){
-                FreemarkerEngine.createFileByFTL(cfg, root, "mapperclass_core.ftl", pathSrc, "/mapperclass_core/" +   className + "Mapper.java");
+            if ("Y".equals(CodeResourceUtil.getConfigInfo("sqlmap_auth_sharding"))) {
+                Map<String,String>uniqProperties = createBean.generateByUniqKeyForShardingDB(tableName);
+                root.put("generateByUniqKeyForShardingDB", uniqProperties.get("generateByUniqKeyForShardingDB"));
+                root.put("uniqCondition", uniqProperties.get("uniqCondition"));
+
+                FreemarkerEngine.createFileByFTL(cfg, root, "sqlmap_auth_sharding.ftl", pathSrc, "/sqlmap_auth_sharding" + "/S" + className + "Mapper.xml");
             }
+            if ("Y".equals(CodeResourceUtil.getConfigInfo("sqlmap_core_sharding"))) {
+                Map<String,String>uniqProperties = createBean.generateByUniqKeyForShardingDB(tableName);
+                root.put("generateByUniqKeyForShardingDB", uniqProperties.get("generateByUniqKeyForShardingDB"));
+                root.put("uniqCondition", uniqProperties.get("uniqCondition"));
+
+                FreemarkerEngine.createFileByFTL(cfg, root, "sqlmap_core_sharding.ftl", pathSrc, "/sqlmap_core_sharding" + "/S" + className + "Mapper.xml");
+            }
+            if ("Y".equals(CodeResourceUtil.getConfigInfo("sqlmap_core"))) {
+                Map<String,String>uniqProperties = createBean.generateByUniqKey(tableName);
+                root.put("generateByUniqKey", uniqProperties.get("generateByUniqKey"));
+                root.put("uniqCondition", uniqProperties.get("uniqCondition"));
+
+                FreemarkerEngine.createFileByFTL(cfg, root, "sqlmap_core.ftl", pathSrc, "/sqlmap_core/" + className + "Mapper.xml");
+            }
+
             log.info("----------------------------代码生成完毕---------------------------");
         } catch (Exception e1) {
             e1.printStackTrace();

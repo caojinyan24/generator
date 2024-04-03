@@ -1,10 +1,10 @@
 package ${domainPackage}.service.datachecker;
 
 import com.google.common.collect.Maps;
-import ${domainPackage}.dao.ccscore.${className}Mapper;
-import ${domainPackage}.dao.authsharding.S${className}Mapper;
-import ${domainPackage}.dao.entity.core.${className};
-import ${domainPackage}.util.GlobalParam;
+import com.xiaoju.global.fintech.creditcard.dao.ccscore.${className}Mapper;
+import com.xiaoju.global.fintech.creditcard.dao.authsharding.S${className}Mapper;
+import com.xiaoju.global.fintech.creditcard.dao.entity.core.${className};
+import com.xiaoju.global.fintech.creditcard.util.GlobalParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -49,7 +49,6 @@ public class ${className}Checker extends Abstract {
                 return false;
             }
         }
-        //todo 转map doublecheck
         return true;
     }
 }

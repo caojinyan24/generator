@@ -18,6 +18,7 @@ public interface ${className}Mapper{
 
     List<${className}> selectByCustId(@Param("custId") String custId);
 
+${generateByUniqKey}
 
 
 

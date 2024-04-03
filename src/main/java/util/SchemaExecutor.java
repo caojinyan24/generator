@@ -39,8 +39,8 @@ public class SchemaExecutor {
                 }
 
                 String schema = sb.toString();
-                schema = schema.replace("_{0,255}", "");
-//                schema= schema.replace(";",";\n");
+                schema = schema.replace("_{0,255}", "_2");
+                schema= schema.replace(";",";\n");
 
 //                System.out.println("***************");
 
@@ -87,11 +87,10 @@ public class SchemaExecutor {
                 BufferedReader in = new BufferedReader(new java.io.FileReader(item.getAbsolutePath()));
                 while (in.ready()) {
                     sb.append(in.readLine()).append("\n");
-                    System.out.println(sb.toString());
                 }
                 try {
-                    createBean.getConnection().prepareCall(String.format("drop table if exists %s", item.getName())).execute();
-
+//                    createBean.getConnection().prepareCall(String.format("drop table if exists %s", item.getName())).execute();
+                    System.out.println("====================================execute："+sb+"====================================");
                     createBean.getConnection().prepareCall(sb.toString()).execute();
                 } catch (Exception e) {
                     System.out.println(e);
