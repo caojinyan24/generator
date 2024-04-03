@@ -1,6 +1,6 @@
 package ${domainPackage}.dao.ccscore;
 
-import ${domainPackage}.dao.entity.core.${className};
+import com.xiaoju.global.fintech.creditcard.dao.entity.core.${className};
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Qualifier;

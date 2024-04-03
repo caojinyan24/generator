@@ -94,18 +94,10 @@ public class CodeGenerateFactory {
             String pageDetailPath = controllerPackage.replace(".", "/") + "/" + lowerName + "Detail.vm";
 
 
-            String sqlMapperFlag = CodeResourceUtil.getConfigInfo("sqlmap_flag");
             String domainFlag = CodeResourceUtil.getConfigInfo("domain_flag");
-            String mapperFlag = CodeResourceUtil.getConfigInfo("mapper_flag");
             String serviceFlag = CodeResourceUtil.getConfigInfo("service_flag");
             String serviceImplFlag = CodeResourceUtil.getConfigInfo("service_impl_flag");
             String controllerFlag = CodeResourceUtil.getConfigInfo("controller_flag");
-            String domainQueryFlag = CodeResourceUtil.getConfigInfo("domain_query_flag");
-
-            String checkFlag = CodeResourceUtil.getConfigInfo("check_flag");
-            String repairFlag = CodeResourceUtil.getConfigInfo("repair_flag");
-            String smapperFlag = CodeResourceUtil.getConfigInfo("smapper_flag");
-            String ssqlFlag = CodeResourceUtil.getConfigInfo("ssql_flag");
 
 
 //            Map<String, Object> sqlMap = createBean.getAutoCreateSql(tableName);
@@ -160,7 +152,7 @@ public class CodeGenerateFactory {
             if ("Y".equals(domainFlag)) {
                 FreemarkerEngine.createFileByFTL(cfg, root, "domainClass.ftl", pathSrc, domainPath);
             }
-            if ("Y".equals(mapperFlag)) {
+            if ("Y".equals(CodeResourceUtil.getConfigInfo("mapperclass_core"))) {
                 Map<String,String>uniqProperties = createBean.generateByUniqKey(tableName);
                 root.put("generateByUniqKey", uniqProperties.get("generateByUniqKey"));
                 root.put("uniqCondition", uniqProperties.get("uniqCondition"));
