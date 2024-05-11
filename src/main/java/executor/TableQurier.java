@@ -1,9 +1,9 @@
-package util;
+package executor;
 
-import codeGenerate.CreateBean;
-import codeGenerate.TableInfo;
+import codeGenerate.service.CreateBean;
+import codeGenerate.vo.TableInfo;
 import codeGenerate.def.CodeResourceUtil;
-import codeGenerate.factory.ToolUtil;
+import codeGenerate.def.ToolUtil;
 
 import java.io.File;
 import java.util.List;
@@ -30,8 +30,6 @@ public class TableQurier {
         createBean.setMysqlInfo(url, username, passWord);
         List<TableInfo> tables = createBean.getTablesInfo();
         for (TableInfo info : tables) {
-//			System.out.println(info.getTableName()+";"+info.getTableComment());
-
             ToolUtil.writeFile(file, info.getTableName().toLowerCase() + ";" + (info.getTableComment().trim().length() == 0 ? info.getTableName().toLowerCase() : info.getTableComment()));
         }
     }

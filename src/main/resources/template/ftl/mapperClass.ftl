@@ -9,10 +9,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ${className}Mapper{
 
-     void insertSelective(${className} ${lowerName});
-${updateByUniqKey}
-${selectSelectiveByIndex}
-${selectSelectiveWithUniqKey}
+ public void insertSelective(${className} ${lowerName});
+
+    public void updateById(@Param("id") ${className} ${lowerName});
+
+
+    public ${className} selectSelective(${className} ${lowerName});
+
 
 
 

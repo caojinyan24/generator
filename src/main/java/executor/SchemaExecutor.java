@@ -1,7 +1,7 @@
-package util;
+package executor;
 
-import codeGenerate.CreateBean;
 import codeGenerate.def.CodeResourceUtil;
+import codeGenerate.service.CreateBean;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,13 +11,13 @@ public class SchemaExecutor {
     private static String username = CodeResourceUtil.USERNAME;
     private static String passWord = CodeResourceUtil.PASSWORD;
 
-    public static void main(String[] args) {
-        new SchemaExecutor().convertToShardingAndExecute();
-
+    public static void main(String[] args) throws Exception {
+//        new SchemaExecutor().convertToShardingAndExecute("auth");
+        new SchemaExecutor().execute();
 
     }
 
-    public void convertToShardingAndExecute() {
+    public void convertToShardingAndExecute(String group) {
         CreateBean createBean = new CreateBean();
         System.out.println("url=" + url);
         System.out.println("username=" + username);
@@ -26,7 +26,7 @@ public class SchemaExecutor {
         File[] files = new File(new File("").getAbsolutePath() + "/src/main/resources/dbstructure").listFiles();
         for (File item : files) {
             try {
-                if (!item.isFile()||!item.getName().startsWith("auth_")) {
+                if (!item.isFile() || !item.getName().startsWith(group)) {
                     continue;
                 }
                 if (!item.isFile()) {
@@ -39,8 +39,8 @@ public class SchemaExecutor {
                 }
 
                 String schema = sb.toString();
-                schema = schema.replace("_{0,255}", "_2");
-                schema= schema.replace(";",";\n");
+                schema = schema.replace("_{0,255}", "_0");
+                schema = schema.replace(";", ";\n");
 
 //                System.out.println("***************");
 
@@ -53,6 +53,7 @@ public class SchemaExecutor {
                     }
                     try {
                         createBean.getConnection().prepareCall(sch[i]).execute();
+                        System.out.println("execute " + sch[i]);
                     } catch (Exception e) {
                         if (!e.toString().contains("already exists")) {
                             System.out.println("Err:" + sch[i]);
@@ -71,41 +72,50 @@ public class SchemaExecutor {
         }
     }
 
-    public void execute() {
+    public void execute() throws Exception {
         CreateBean createBean = new CreateBean();
-        System.out.println("url=" + url);
-        System.out.println("username=" + username);
+//        System.out.println("url=" + url);
+//        System.out.println("username=" + username);
         createBean.setMysqlInfo(url, username, passWord);
         System.out.println(new File("").getAbsolutePath());
-        File[] files = new File(new File("").getAbsolutePath() + "/src/main/resources/dbstructure").listFiles();
+        File[] files = new File(new File("").getAbsolutePath() + "/src/main/resources/dbstructure/core/").listFiles();
         for (File item : files) {
-            try {
-                if (!item.isFile()) {
-                    continue;
-                }
-                StringBuilder sb = new StringBuilder();
-                BufferedReader in = new BufferedReader(new java.io.FileReader(item.getAbsolutePath()));
-                while (in.ready()) {
-                    sb.append(in.readLine()).append("\n");
-                }
-                try {
-//                    createBean.getConnection().prepareCall(String.format("drop table if exists %s", item.getName())).execute();
-                    System.out.println("====================================execute："+sb+"====================================");
-                    createBean.getConnection().prepareCall(sb.toString()).execute();
-                } catch (Exception e) {
-                    System.out.println(e);
-
-
-                }
-
-
-            } catch (Exception e) {
-                System.out.println("ERROR:" + item.getName());
-                System.out.println(e);
-
-
+            if (item.isFile()) {
+                execute(item.getName());
             }
         }
     }
+
+    public void execute(String fileName) throws Exception {
+        CreateBean createBean = new CreateBean();
+//        System.out.println("url=" + url);
+//        System.out.println("username=" + username);
+        createBean.setMysqlInfo(url, username, passWord);
+        System.out.println(new File("").getAbsolutePath());
+        File file = new File(new File("").getAbsolutePath() + "/src/main/resources/dbstructure/core/" + fileName);
+        try {
+            BufferedReader in = new BufferedReader(new java.io.FileReader(file.getAbsolutePath()));
+            String insert = "";
+            while (in.ready()) {
+                String sql = in.readLine();
+                insert = insert + sql;
+//                if (sql.contains(";")) {
+
+//                    insert = "";
+//                }
+
+            }
+            System.out.println("====================================execute：" + insert + "====================================");
+            createBean.getConnection().prepareCall(insert).execute();
+
+
+        } catch (Exception e) {
+            System.out.println(e);
+
+
+        }
+    }
 }
+
+
 

@@ -1,7 +1,10 @@
-package codeGenerate;
+package codeGenerate.service;
 
 import codeGenerate.def.CodeResourceUtil;
 import codeGenerate.def.TableConvert;
+import codeGenerate.vo.ColumnData;
+import codeGenerate.vo.IndexData;
+import codeGenerate.vo.TableInfo;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -113,7 +116,7 @@ public class CreateBean {
      * @throws SQLException
      */
     public List<ColumnData> getColumnDatas(String tableName) throws SQLException {
-        String SQLColumns = "select column_name ,data_type,column_comment,0,0,character_maximum_length,is_nullable nullable,COLUMN_KEY from information_schema.columns where table_name =  '" + tableName + "' " + "and table_schema =  '" + CodeResourceUtil.DATABASE_NAME + "'";
+        String SQLColumns = "select column_name ,data_type,column_comment,0,0,character_maximum_length,is_nullable nullable,COLUMN_KEY from information_schema.columns where table_name =  '" + tableName + "' " + "and table_schema =  '" + CodeResourceUtil.DATABASE_NAME + "' order by column_name";
 
         Connection con = this.getConnection();
         PreparedStatement ps = con.prepareStatement(SQLColumns);
@@ -165,27 +168,40 @@ public class CreateBean {
      * @throws SQLException
      */
     public List<IndexData> getIndexDatas(String tableName) throws SQLException {
-        List<IndexData> result = new ArrayList<IndexData>();
         String SQLColumns = String.format("SELECT  INDEX_NAME , SEQ_IN_INDEX,COLUMN_NAME,NON_UNIQUE FROM information_schema.STATISTICS where TABLE_NAME='%s' and TABLE_SCHEMA='%s'", tableName, CodeResourceUtil.getDATABASE_NAME());
         Connection con = this.getConnection();
         PreparedStatement ps = con.prepareStatement(SQLColumns);
         ResultSet rs = ps.executeQuery();
+        Map<String, IndexData> indexMap = new HashMap<String, IndexData>();
         while (rs.next()) {
             String indexName = rs.getString(1);
             Integer indexSeq = rs.getInt(2);
             String column = rs.getString(3);
             Integer nonUniq = rs.getInt(4);
-            if (indexSeq == 1 || result.size() == 0) {
-                List<String> columns = new ArrayList<String>();
-                columns.add(column);
-                result.add(new IndexData(columns, nonUniq, indexName));
+            if (indexMap.get(indexName) == null) {
+                List<String> columns = initCapacity(indexSeq);
+                columns.set(indexSeq - 1, column);
+                indexMap.put(indexName, new IndexData(columns, nonUniq, indexName));
             } else {
-                result.get(result.size() - 1).getIndexFields().add(column);
+                IndexData indexData = indexMap.get(indexName);
+                if (indexData.indexFields.size() < indexSeq) {
+                    indexData.indexFields.addAll(initCapacity(indexSeq - indexData.indexFields.size()));
+                }
+                indexData.indexFields.set(indexSeq - 1, column);
+                indexMap.put(indexName, indexData);
             }
         }
         rs.close();
         ps.close();
         con.close();
+        return new ArrayList<IndexData>(indexMap.values());
+    }
+
+    private List<String> initCapacity(Integer c) {
+        List<String> result = new ArrayList<String>();
+        for (int i = 0; i < c; i++) {
+            result.add(new String());
+        }
         return result;
     }
 
@@ -272,7 +288,7 @@ public class CreateBean {
             String comment = d.getColumnComment();
             String maxChar = name.substring(0, 1).toUpperCase();
             str.append("\r\t").append("/**");
-            str.append("\r\t").append(" *").append(comment);
+            str.append("\r\t").append(" * ").append(comment);
             str.append("\r\t").append(" */");
             str.append("\r\t").append("private ").append(type + " ").append(name).append(";");
             if (!(name.equals("pid") || name.equals("createTime") || name.equals("updateTime") || name.equals("jpaVersion"))) {
@@ -705,6 +721,7 @@ public class CreateBean {
         resultMap.put("uniqCondition", sql);
         return resultMap;
     }
+
     public Map<String, String> generateByUniqKey(String tableName) throws SQLException {
         Map<String, String> resultMap = new HashMap<String, String>();
         String className = getTablesNameToClassName(tableName);
@@ -730,11 +747,13 @@ public class CreateBean {
         resultMap.put("uniqCondition", sql);
         return resultMap;
     }
+
     public String getParameterUniq(String tableName) throws SQLException {
         String result = "";
         List<IndexData> indexDataList = getIndexDatas(tableName);
         for (IndexData indexData : indexDataList) {
             if (indexData.getIndexType() == 0 && !"PRIMARY".equals(indexData.keyName)) {
+                System.out.println(indexData);
                 for (String column : indexData.getIndexFields()) {
                     String propertyName = getcolumnNameToDomainPropertyName(column);
                     result += String.format("item.get%s(), ", propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1));

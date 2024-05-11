@@ -1,8 +1,7 @@
-package util;
+package executor;
 
-import codeGenerate.CreateBean;
-import codeGenerate.Generator;
-import codeGenerate.TableInfo;
+import codeGenerate.service.Generator;
+import codeGenerate.vo.TableInfo;
 import codeGenerate.def.CodeResourceUtil;
 
 import java.io.BufferedReader;
@@ -29,7 +28,7 @@ public class CodeGenerator {
 
         List<TableInfo> tables = new ArrayList<TableInfo>();
 
-        final File file = new File("out/tables.txt");
+        final File file = new File("out/core_tables.txt");
         BufferedReader in = new BufferedReader(new FileReader(file.getAbsolutePath()));
         while (in.ready()) {
             String line = in.readLine();

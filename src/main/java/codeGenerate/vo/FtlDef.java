@@ -1,4 +1,4 @@
-package codeGenerate.def;
+package codeGenerate.vo;
 
 public final class FtlDef {
 	private FtlDef() {

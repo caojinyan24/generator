@@ -6,7 +6,7 @@ import java.util.Objects;
 
 /**
  * ${className}:${codeName}
- * Created by ${author} on ${nowDate}
+ * Created by ${author}
  */
 public class ${className} implements Serializable{
 	private static final long serialVersionUID = 1L;

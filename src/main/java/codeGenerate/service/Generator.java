@@ -1,6 +1,7 @@
-package codeGenerate;
+package codeGenerate.service;
 
 import codeGenerate.task.CodeGenerateTask;
+import codeGenerate.vo.TableInfo;
 
 import java.util.ArrayList;
 import java.util.Date;

@@ -1,7 +1,7 @@
-package util;
+package executor;
 
-import codeGenerate.def.FtlDef;
-import codeGenerate.factory.CodeGenerateFactory;
+import codeGenerate.vo.FtlDef;
+import codeGenerate.service.CodeGenerateFactory;
 
 /**
  * 描述：根据表生成

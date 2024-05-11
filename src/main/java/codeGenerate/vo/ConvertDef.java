@@ -1,4 +1,4 @@
-package codeGenerate.def;
+package codeGenerate.vo;
 
 public interface ConvertDef {
 

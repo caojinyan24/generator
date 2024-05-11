@@ -1,6 +1,8 @@
 package codeGenerate.def;
 
 
+import codeGenerate.vo.ConvertDef;
+
 public class TableConvert {
 
 	/**

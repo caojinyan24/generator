@@ -1,10 +1,10 @@
 package ${domainPackage}.service.datachecker;
 
 import com.google.common.collect.Maps;
-import ${domainPackage}.dao.ccscore.${className}Mapper;
-import ${domainPackage}.dao.coresharding.S${className}Mapper;
-import ${domainPackage}.dao.entity.core.${className};
-import ${domainPackage}.util.GlobalParam;
+import ${basePackage}.${bizPackage}.dao.ccscore.${className}Mapper;
+import ${basePackage}.${bizPackage}.dao.coresharding.S${className}Mapper;
+import ${basePackage}.${bizPackage}.dao.entity.core.${className};
+import ${basePackage}.${bizPackage}.util.GlobalParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 /**
 * ${className}Mapper
-* Created by ${author} on ${nowDate}
+* Created by ${author}
 */
 @Component
 public class ${className}Checker extends Abstract {
@@ -24,12 +24,13 @@ public class ${className}Checker extends Abstract {
     ${className}Mapper ${lowerName}Mapper;
     @Resource
     S${className}Mapper s${className}Mapper;
-
+   @Resource
+    GlobalParam globalParam;
 
     @Override
     public Boolean check(String custId) {//
         List<${className}> oldData = ${lowerName}Mapper.selectByCustId(custId);
-        List<${className}> newData = s${className}Mapper.selectByCustId(custId, GlobalParam.tableRouter.GetTableSuffix(custId));
+        List<${className}> newData = s${className}Mapper.selectByCustId(custId, globalParam.getTableSuffix(custId));
         if (oldData.size() != newData.size()) {
             logger.error("data size not equal:{},{}", oldData.size(), newData.size());
             return false;

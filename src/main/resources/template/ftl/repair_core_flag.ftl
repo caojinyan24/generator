@@ -1,10 +1,10 @@
 package ${domainPackage}.service.datarepair;
 
 import com.google.common.collect.Maps;
-import ${domainPackage}.dao.ccscore.${className}Mapper;
-import ${domainPackage}.dao.coresharding.S${className}Mapper;
-import ${domainPackage}.dao.entity.core.${className};
-import ${domainPackage}.util.GlobalParam;
+import ${basePackage}.${bizPackage}.dao.ccscore.${className}Mapper;
+import ${basePackage}.${bizPackage}.dao.coresharding.S${className}Mapper;
+import ${basePackage}.${bizPackage}.dao.entity.core.${className};
+import ${basePackage}.${bizPackage}.util.GlobalParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 /**
 * ${className}Mapper
-* Created by ${author} on ${nowDate}
+* Created by ${author}
 */
 @Component
 public class ${className}Repair extends Abstract {
@@ -24,12 +24,13 @@ public class ${className}Repair extends Abstract {
     ${className}Mapper ${lowerName}Mapper;
     @Resource
     S${className}Mapper s${className}Mapper;
-
+@Resource
+    GlobalParam globalParam;
 
     @Override
     public Boolean repair(String custId) {//
         List<${className}> oldData = ${lowerName}Mapper.selectByCustId(custId);
-        List<${className}> newData = s${className}Mapper.selectByCustId(custId, GlobalParam.tableRouter.GetTableSuffix(custId));
+        List<${className}> newData = s${className}Mapper.selectByCustId(custId, globalParam.getTableSuffix(custId));
         if (oldData.size() < newData.size()) {
             logger.error("attention: new db data more than old  :{},{}", oldData.size(), newData.size());
             return false;
@@ -43,12 +44,12 @@ public class ${className}Repair extends Abstract {
             ${className} newItem = newMap.get(uniq);
             if (newItem == null) {//insert data
                 item.setPid(null);
-                s${className}Mapper.insertSelective(item, GlobalParam.tableRouter.GetTableSuffix(custId));
+                s${className}Mapper.insertSelective(item, globalParam.getTableSuffix(custId));
                 continue;
             }
             if (!newItem.equals(item)) {//update
                 item.setPid(null);
-                s${className}Mapper.updateByUniqKey(${uniqItemParam} item, GlobalParam.tableRouter.GetTableSuffix(custId));
+                s${className}Mapper.updateByUniqKey(${uniqItemParam} item, globalParam.getTableSuffix(custId));
             }
         }
         return true;

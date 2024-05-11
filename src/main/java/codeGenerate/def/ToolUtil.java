@@ -1,4 +1,4 @@
-package codeGenerate.factory;
+package codeGenerate.def;
 
 import java.io.File;
 import java.io.FileWriter;

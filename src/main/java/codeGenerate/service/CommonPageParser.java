@@ -1,7 +1,6 @@
-package codeGenerate;
+package codeGenerate.service;
 
 import codeGenerate.def.CodeResourceUtil;
-import codeGenerate.factory.CodeGenerateFactory;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;

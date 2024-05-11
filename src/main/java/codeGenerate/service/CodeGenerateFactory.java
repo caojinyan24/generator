@@ -1,9 +1,8 @@
-package codeGenerate.factory;
+package codeGenerate.service;
 
-import codeGenerate.ColumnData;
-import codeGenerate.CreateBean;
 import codeGenerate.def.CodeResourceUtil;
 import codeGenerate.def.FreemarkerEngine;
+import codeGenerate.vo.ColumnData;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import org.apache.commons.lang.StringUtils;
@@ -33,13 +32,6 @@ public class CodeGenerateFactory {
     private static String username = CodeResourceUtil.USERNAME;
     private static String passWord = CodeResourceUtil.PASSWORD;
 
-    //项目跟路径路径，此处修改为你的项目路径
-    //private static String projectPath = "F:\\project\\lvyou\\workspace-jeecg\\YIYA_SERVICE\\";//getRootPath();// "F:\\openwork\\open\\";
-
-    //业务包
-    private static String buss_package = CodeResourceUtil.bussiPackage;
-//	private static String projectPath = getProjectPath();
-
 
     /**
      * 单表（代码生成方法）
@@ -65,17 +57,17 @@ public class CodeGenerateFactory {
 
             String pathSrc = CodeResourceUtil.getConfigInfo("path_src");//从配置文件读
             String basePackage = CodeResourceUtil.getConfigInfo("base_package");
-            String bussiPackage = CodeResourceUtil.getConfigInfo("bussi_package");
+            String bizPackage = CodeResourceUtil.getConfigInfo("biz_package");
             String author = CodeResourceUtil.getConfigInfo("author");
 
             String sqlmapPackage = "resources.sqlmap";
-            String domainPackage = basePackage + "." + bussiPackage + ".entity";//com.qunar.pay.g2.fpp.system.entity
-            String mapperPackage = basePackage + "." + bussiPackage + ".mapper";//com.qunar.pay.g2.fpp.system.mapper
+            String domainPackage = basePackage + "." + bizPackage + ".entity";//com.qunar.pay.g2.fpp.system.entity
+            String mapperPackage = basePackage + "." + bizPackage + ".mapper";//com.qunar.pay.g2.fpp.system.mapper
 
-            String servicePackage = basePackage + "." + bussiPackage + ".service";//com.qunar.pay.g2.fpp.system.service
-            String serviceImplPackage = basePackage + "." + bussiPackage + ".service.impl";//com.qunar.pay.g2.fpp.system.service.impl
-            String controllerPackage = basePackage + ".web." + bussiPackage;//com.qunar.pay.g2.fpp.web.system
-            String domainQueryPackage = basePackage + "." + bussiPackage + ".vo";//com.qunar.pay.g2.fpp.system.vo
+            String servicePackage = basePackage + "." + bizPackage + ".service";//com.qunar.pay.g2.fpp.system.service
+            String serviceImplPackage = basePackage + "." + bizPackage + ".service.impl";//com.qunar.pay.g2.fpp.system.service.impl
+            String controllerPackage = basePackage + ".web." + bizPackage;//com.qunar.pay.g2.fpp.web.system
+            String domainQueryPackage = basePackage + "." + bizPackage + ".vo";//com.qunar.pay.g2.fpp.system.vo
 
 
             //java,xml文件名称
@@ -100,14 +92,12 @@ public class CodeGenerateFactory {
             String controllerFlag = CodeResourceUtil.getConfigInfo("controller_flag");
 
 
-//            Map<String, Object> sqlMap = createBean.getAutoCreateSql(tableName);
             List<ColumnData> columnDatas = createBean.getColumnDatas(tableName);
             List<ColumnData> columnKeyDatas = createBean.getColumnKeyDatas(columnDatas);
             String columnKeyParam = createBean.getColumnKeyParam(columnKeyDatas);
             String columnKeyUseParam = createBean.getColumnKeyUseParam(columnKeyDatas);
             SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String nowDate = dateformat.format(new Date());
-            System.out.println("时间:" + nowDate);
 
 
             Map<String, Object> root = new HashMap<String, Object>();
@@ -118,7 +108,8 @@ public class CodeGenerateFactory {
             root.put("tableName", tableName);
             root.put("tableNameUpper", tableNameUpper);
             root.put("tablesAsName", tablesAsName);
-            root.put("bussPackage", bussiPackage);
+            root.put("bizPackage", bizPackage);
+            root.put("basePackage", basePackage);
             root.put("domainPackage", domainPackage);
             root.put("domainQueryPackage", domainQueryPackage);
             root.put("mapperPackage", mapperPackage);
@@ -134,12 +125,10 @@ public class CodeGenerateFactory {
             /*******************************生成sql语句**********************************/
             root.put("columnDatas", columnDatas); //生成bean
             root.put("columnKeyDatas", columnKeyDatas); //生成bean
-            root.put("columnKeyParam", columnKeyParam); //生成主键参数
+            root.put("columnKeyParam", columnKeyParam); //生成主键参数z
             root.put("columnKeyUseParam", columnKeyUseParam); //生成使用的主键参数
-//            root.put("SQL", sqlMap);
 
             /*******************************解析index**********************************/
-
 
 
             /*******************************解析index**********************************/
@@ -153,10 +142,11 @@ public class CodeGenerateFactory {
                 FreemarkerEngine.createFileByFTL(cfg, root, "domainClass.ftl", pathSrc, domainPath);
             }
             if ("Y".equals(CodeResourceUtil.getConfigInfo("mapperclass_core"))) {
-                Map<String,String>uniqProperties = createBean.generateByUniqKey(tableName);
+                Map<String, String> uniqProperties = createBean.generateByUniqKey(tableName);
                 root.put("generateByUniqKey", uniqProperties.get("generateByUniqKey"));
                 root.put("uniqCondition", uniqProperties.get("uniqCondition"));
-                FreemarkerEngine.createFileByFTL(cfg, root, "mapperclass_core.ftl", pathSrc, mapperPath);
+                FreemarkerEngine.createFileByFTL(cfg, root, "mapperclass_core.ftl", pathSrc, "/mapperclass_core/" + className + "Mapper.java");
+
             }
             if ("Y".equals(serviceFlag)) {
                 FreemarkerEngine.createFileByFTL(cfg, root, "serviceClass.ftl", pathSrc, servicePath);
@@ -188,34 +178,40 @@ public class CodeGenerateFactory {
                 FreemarkerEngine.createFileByFTL(cfg, root, "repair_auth_flag.ftl", pathSrc, "/repair_auth_flag/" + className + "Repair.java");
             }
             if ("Y".equals(CodeResourceUtil.getConfigInfo("mapperClass_auth_sharding"))) {
-                Map<String,String>uniqProperties = createBean.generateByUniqKeyForShardingDB(tableName);
+                Map<String, String> uniqProperties = createBean.generateByUniqKeyForShardingDB(tableName);
                 root.put("generateByUniqKeyForShardingDB", uniqProperties.get("generateByUniqKeyForShardingDB"));
                 root.put("uniqCondition", uniqProperties.get("uniqCondition"));
 
                 FreemarkerEngine.createFileByFTL(cfg, root, "mapperClass_auth_sharding.ftl", pathSrc, "/mapperClass_auth_sharding" + "/S" + className + "Mapper.java");
             }
+            if ("Y".equals(CodeResourceUtil.getConfigInfo("mapperClass_core_sharding"))) {
+                Map<String, String> uniqProperties = createBean.generateByUniqKeyForShardingDB(tableName);
+                root.put("generateByUniqKeyForShardingDB", uniqProperties.get("generateByUniqKeyForShardingDB"));
+                root.put("uniqCondition", uniqProperties.get("uniqCondition"));
+
+                FreemarkerEngine.createFileByFTL(cfg, root, "mapperClass_core_sharding.ftl", pathSrc, "/mapperClass_core_sharding" + "/S" + className + "Mapper.java");
+            }
             if ("Y".equals(CodeResourceUtil.getConfigInfo("sqlmap_auth_sharding"))) {
-                Map<String,String>uniqProperties = createBean.generateByUniqKeyForShardingDB(tableName);
+                Map<String, String> uniqProperties = createBean.generateByUniqKeyForShardingDB(tableName);
                 root.put("generateByUniqKeyForShardingDB", uniqProperties.get("generateByUniqKeyForShardingDB"));
                 root.put("uniqCondition", uniqProperties.get("uniqCondition"));
 
                 FreemarkerEngine.createFileByFTL(cfg, root, "sqlmap_auth_sharding.ftl", pathSrc, "/sqlmap_auth_sharding" + "/S" + className + "Mapper.xml");
             }
             if ("Y".equals(CodeResourceUtil.getConfigInfo("sqlmap_core_sharding"))) {
-                Map<String,String>uniqProperties = createBean.generateByUniqKeyForShardingDB(tableName);
+                Map<String, String> uniqProperties = createBean.generateByUniqKeyForShardingDB(tableName);
                 root.put("generateByUniqKeyForShardingDB", uniqProperties.get("generateByUniqKeyForShardingDB"));
                 root.put("uniqCondition", uniqProperties.get("uniqCondition"));
 
                 FreemarkerEngine.createFileByFTL(cfg, root, "sqlmap_core_sharding.ftl", pathSrc, "/sqlmap_core_sharding" + "/S" + className + "Mapper.xml");
             }
             if ("Y".equals(CodeResourceUtil.getConfigInfo("sqlmap_core"))) {
-                Map<String,String>uniqProperties = createBean.generateByUniqKey(tableName);
+                Map<String, String> uniqProperties = createBean.generateByUniqKey(tableName);
                 root.put("generateByUniqKey", uniqProperties.get("generateByUniqKey"));
                 root.put("uniqCondition", uniqProperties.get("uniqCondition"));
 
                 FreemarkerEngine.createFileByFTL(cfg, root, "sqlmap_core.ftl", pathSrc, "/sqlmap_core/" + className + "Mapper.xml");
             }
-
             log.info("----------------------------代码生成完毕---------------------------");
         } catch (Exception e1) {
             e1.printStackTrace();
@@ -229,7 +225,6 @@ public class CodeGenerateFactory {
      * @return
      */
     public static String getProjectPath() {
-        String path = System.getProperty("user.dir").replace("/", "/") + "/";
-        return path;
+        return System.getProperty("user.dir") + "/";
     }
 }

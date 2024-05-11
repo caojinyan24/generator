@@ -1,6 +1,6 @@
 package ${domainPackage}.dao.ccscore;
 
-import com.xiaoju.global.fintech.creditcard.dao.entity.core.${className};
+import ${basePackage}.${bizPackage}.dao.entity.core.${className};
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 /**
 * ${className}Mapper
-* Created by ${author} on ${nowDate}
+* Created by ${author}
 */
 @Repository
 @Qualifier("ccscoreSqlSessionTemplate")

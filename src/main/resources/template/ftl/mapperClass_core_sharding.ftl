@@ -1,6 +1,6 @@
 package ${domainPackage}.dao.authsharding;
 
-import com.xiaoju.global.fintech.creditcard.dao.entity.core.${className};
+import ${basePackage}.${bizPackage}.dao.entity.core.${className};
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -9,10 +9,10 @@ import java.util.List;
 
 /**
 * ${className}Mapper
-* Created by ${author} on ${nowDate}
+* Created by ${author}
 */
 @Mapper
-@Qualifier("authshardingSqlSessionTemplate")
+@Qualifier("coreshardingSqlSessionTemplate")
 public interface S${className}Mapper {
 
     void insertSelective(@Param("data") ${className} ${lowerName}, @Param("suffix") String suffix);

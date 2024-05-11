@@ -1,4 +1,4 @@
-package codeGenerate;
+package codeGenerate.vo;
 
 import java.util.List;
 

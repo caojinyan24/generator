@@ -24,7 +24,7 @@
         </#list>
         </trim>
         WHERE
-        XXX = ${"#"+"{uniqKey}"}
+        ${uniqCondition}
     </update>
 
 
@@ -82,26 +82,7 @@
     </select>
 
 
-<select id="selectSelectiveWithXXX"  resultType="${domainPackage}.${className}">
-        SELECT
-    <#list columnDatas as item>
-        <#if item_index==0>
-        ${" "}${item.columnName}  AS  ${" "}${item.domainPropertyName}
-        <#else>
-        ${" "},${item.columnName}  AS  ${"   "}${item.domainPropertyName}
-        </#if>
-    </#list>
-        FROM   ${tableName}
-        WHERE
-        xxx=${"#"+"{uniqKey}"}
-        <trim suffixOverrides=",">
-        <#list columnDatas as item>
-            <if test="query.${item.domainPropertyName} != null and query.${item.domainPropertyName} != ''">
-                AND ${tablesAsName}.${item.columnName} =  ${"#"}{query.${item.domainPropertyName}}
-            </if>
-        </#list>
-        </trim>
-</select>
+
 <insert id="insertOnDuplicate" parameterType="${domainPackage}.${className}">
         INSERT INTO  ${tableName}
         (

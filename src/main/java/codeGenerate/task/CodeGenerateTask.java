@@ -2,9 +2,9 @@ package codeGenerate.task;
 
 import java.util.concurrent.Callable;
 
-import codeGenerate.TableInfo;
-import codeGenerate.def.FtlDef;
-import codeGenerate.factory.CodeGenerateFactory;
+import codeGenerate.vo.TableInfo;
+import codeGenerate.vo.FtlDef;
+import codeGenerate.service.CodeGenerateFactory;
 
 public class CodeGenerateTask implements Callable<Boolean>{
 	
