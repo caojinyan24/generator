@@ -5,5 +5,5 @@
 /*.iml
 /target/
 /out/
-/src/main/resources/dbstructure
-**/database.properties
+#/src/main/resources/dbstructure
+#**/database.properties

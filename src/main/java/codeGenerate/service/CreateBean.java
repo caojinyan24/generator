@@ -313,6 +313,7 @@ public class CreateBean {
 
             toString.append("    sb.append(\", ").append(d.getDomainPropertyName()).append("=\").append(").append(d.getDomainPropertyName()).append(");\r\t");
 
+
         }
         argv = str.toString();
         method = getset.toString();

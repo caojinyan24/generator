@@ -16,6 +16,7 @@ public interface ${className}Mapper{
 
     public ${className} selectSelective(${className} ${lowerName});
 
+${generateByUniqKey}
 
 
 

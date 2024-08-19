@@ -28,7 +28,7 @@ public class CodeGenerator {
 
         List<TableInfo> tables = new ArrayList<TableInfo>();
 
-        final File file = new File("out/core_tables.txt");
+        final File file = new File("out/tables.txt");
         BufferedReader in = new BufferedReader(new FileReader(file.getAbsolutePath()));
         while (in.ready()) {
             String line = in.readLine();
