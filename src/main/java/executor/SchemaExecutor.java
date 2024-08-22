@@ -41,9 +41,7 @@ public class SchemaExecutor {
                 schema = schema.replace("_{0,255}", "_0");
                 schema = schema.replace(";", ";\n");
 
-//                System.out.println("***************");
 
-//                System.out.println(schema);
                 System.out.println("***************");
                 String[] sch = schema.split(";");
                 for (int i = 0; i < sch.length; i++) {
@@ -73,8 +71,6 @@ public class SchemaExecutor {
 
     public void execute() throws Exception {
         CreateBean createBean = new CreateBean();
-//        System.out.println("url=" + url);
-//        System.out.println("username=" + username);
         createBean.setMysqlInfo(url, username, passWord);
         System.out.println(new File("").getAbsolutePath());
         File[] files = new File(new File("").getAbsolutePath() + "/src/main/resources/dbstructure").listFiles();
@@ -88,8 +84,6 @@ public class SchemaExecutor {
     public void execute(File file) throws Exception {
 
         CreateBean createBean = new CreateBean();
-//        System.out.println("url=" + url);
-//        System.out.println("username=" + username);
         createBean.setMysqlInfo(url, username, passWord);
         System.out.println(new File("").getAbsolutePath());
         try {
@@ -104,10 +98,6 @@ public class SchemaExecutor {
                     insert="";
                 }
 
-//                if (sql.contains(";")) {
-
-//                    insert = "";
-//                }
 
             }
 
